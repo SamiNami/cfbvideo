@@ -14,4 +14,14 @@ class VideospiderSpider(scrapy.Spider):
             yield Request(video_url, callback= self.parse_video)
 
     def parse_video(self, response):
-        pass
+        head_data = response.xpath('//*[@class="postTitle"]')[0]
+        head_data_list = head_data.xpath('.//text()')
+
+
+        title = head_data_list[0].extract()
+        author = head_data_list[2].extract()
+        date = head_data_list[3].extract()
+
+
+
+        print("---------------------", response.request.url)
