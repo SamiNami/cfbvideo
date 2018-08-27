@@ -2,6 +2,7 @@
 import scrapy
 from scrapy.http import Request
 import unicodedata
+from datetime import datetime
 
 
 class VideospiderSpider(scrapy.Spider):
@@ -18,12 +19,12 @@ class VideospiderSpider(scrapy.Spider):
         for video_url in videos_urls:
             yield Request(video_url, callback = self.parse_video)
 
-        # stop after 5 pages
-        if (self.count <= 3):
-            self.count += 1
-            print("+++++++++++++", self.count)
-            next_page = response.xpath('//*[@class="next page-numbers"]/@href').extract_first()
-            yield Request(next_page, callback = self.parse)
+        # stop after 3 pages
+        # if (self.count <= 3):
+        #     self.count += 1
+        #     print("+++++++++++++", self.count)
+        next_page = response.xpath('//*[@class="next page-numbers"]/@href').extract_first()
+        yield Request(next_page, callback = self.parse)
 
 
 
@@ -36,6 +37,8 @@ class VideospiderSpider(scrapy.Spider):
         date = head_data_list[3].extract()
         date = unicodedata.normalize("NFKD", date)
         date = date.replace("  //  ","")
+        date = date.replace(",","")
+        date = datetime.strptime(date, "%d %b %Y").utcnow()
 
         page_url = response.request.url
         youtube_url = response.xpath('//*[@class="wp-video-shortcode"]//@src').extract_first()

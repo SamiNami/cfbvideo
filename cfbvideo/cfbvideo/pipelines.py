@@ -9,6 +9,7 @@
 from pymongo import MongoClient
 from scrapy.conf import settings
 
+
 class MongoDBPipeline(object):
 
     def __init__(self):
