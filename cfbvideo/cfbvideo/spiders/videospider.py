@@ -35,11 +35,13 @@ class VideospiderSpider(scrapy.Spider):
         author = head_data_list[2].extract()
         date = head_data_list[3].extract()
         date = unicodedata.normalize("NFKD", date)
+        date = date.replace("  //  ","")
 
         page_url = response.request.url
         youtube_url = response.xpath('//*[@class="wp-video-shortcode"]//@src').extract_first()
 
         avatar_url = response.xpath('//*[@class="gravatar"]//@src').extract_first()
+
         bio_node =  response.xpath('//*[@class="about"]//child::*')[2]
         bio = bio_node.xpath('.//text()').extract_first()
         bio = unicodedata.normalize("NFKD", bio)
