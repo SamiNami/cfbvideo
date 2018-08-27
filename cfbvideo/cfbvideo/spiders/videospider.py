@@ -29,31 +29,31 @@ class VideospiderSpider(scrapy.Spider):
         title = head_data_list[0].extract()
         author = head_data_list[2].extract()
         date = head_data_list[3].extract()
-        date = self.transform_date(date)
+        date = self.transform_to_datetime(date)
 
         page_url = response.request.url
         youtube_url = response.xpath('//*[@class="wp-video-shortcode"]//@src').extract_first()
 
         avatar_url = response.xpath('//*[@class="gravatar"]//@src').extract_first()
 
-        bio_node =  response.xpath('//*[@class="about"]//child::*')[2]
+        bio_node = response.xpath('//*[@class="about"]//child::*')[2]
         bio = bio_node.xpath('.//text()').extract_first()
         bio = unicodedata.normalize("NFKD", bio)
 
         tags = response.xpath('//*[@rel="tag"]//text()').extract()
 
         yield {
-                "title" :title,
-                "author" :author,
-                "date" :date,
-                "page_url" :page_url,
-                "youtube_url" :youtube_url,
-                "avatar_url" :avatar_url,
-                "bio" :bio,
-                "tags" :tags,
+                "title": title,
+                "author": author,
+                "date": date,
+                "page_url": page_url,
+                "youtube_url": youtube_url,
+                "avatar_url": avatar_url,
+                "bio": bio,
+                "tags": tags,
         }
 
-    def transform_date(self, date_str):
+    def transform_to_datetime(self, date_str):
         date = unicodedata.normalize("NFKD", date_str)
         date = date.replace("  //  ","")
         date = date.replace(",","")
