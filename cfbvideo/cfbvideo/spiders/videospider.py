@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from scrapy.http import Request
+import unicodedata
 
 
 class VideospiderSpider(scrapy.Spider):
@@ -33,6 +34,7 @@ class VideospiderSpider(scrapy.Spider):
         title = head_data_list[0].extract()
         author = head_data_list[2].extract()
         date = head_data_list[3].extract()
+        date = unicodedata.normalize("NFKD", date)
 
         page_url = response.request.url
         youtube_url = response.xpath('//*[@class="wp-video-shortcode"]//@src').extract_first()
@@ -40,6 +42,7 @@ class VideospiderSpider(scrapy.Spider):
         avatar_url = response.xpath('//*[@class="gravatar"]//@src').extract_first()
         bio_node =  response.xpath('//*[@class="about"]//child::*')[2]
         bio = bio_node.xpath('.//text()').extract_first()
+        bio = unicodedata.normalize("NFKD", bio)
 
         tags = response.xpath('//*[@rel="tag"]//text()').extract()
 
