@@ -13,8 +13,18 @@ class VideospiderSpider(scrapy.Spider):
 
     def parse(self, response):
         videos_urls = response.xpath('////*[@class="postTitle"]//a/@href').extract()
+        print(videos_urls)
         for video_url in videos_urls:
-            yield Request(video_url, callback= self.parse_video)
+            yield Request(video_url, callback = self.parse_video)
+
+        # stop after 5 pages
+        if (self.count <= 3):
+            self.count += 1
+            print("+++++++++++++", self.count)
+            next_page = response.xpath('//*[@class="next page-numbers"]/@href').extract_first()
+            yield Request(next_page, callback = self.parse)
+
+
 
     def parse_video(self, response):
         head_data = response.xpath('//*[@class="postTitle"]')[0]
@@ -33,13 +43,13 @@ class VideospiderSpider(scrapy.Spider):
 
         tags = response.xpath('//*[@rel="tag"]//text()').extract()
 
-        self.count += 1
-        print("---------------------",
-            self.count,
-            title,
-            author,
-            date,
-            page_url,
-            youtube_url,
-            avatar_url,
-            bio)
+        yield {
+                "title" :title,
+                "author" :author,
+                "date" :date,
+                "page_url" :page_url,
+                "youtube_url" :youtube_url,
+                "avatar_url" :avatar_url,
+                "bio" :bio,
+                "tags" :tags,
+        }
